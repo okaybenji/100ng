@@ -25,6 +25,11 @@ const createPlayer = function(game, options) {
       } else if (newY === maxY) {
         startY = event.clientY - maxY;
       }
+
+      const percent = (newY / maxY) * 100;
+      socket.send({type: 'move', y: percent});
     });
   }
+
+  return paddle;
 };

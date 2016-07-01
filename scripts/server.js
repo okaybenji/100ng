@@ -67,11 +67,15 @@ wss.on('connection', function connection(ws) {
   });
 
   ws.on('message', function incoming(message) {
+//    console.log('received message:', message);
     const msg = JSON.parse(message);
     const messageHandlers = {
       move() {
         // TODO: if the new received position is within the server's known bounds for the client player,
-        // update the position on the server and broadcast the new position to all connected clients
+        // update the position on the server
+        // broadcast the new position to all connected clients
+        // TODO: only do this, again, if the position is within the expected bounds
+        wss.broadcast(msg);
       }
     };
 

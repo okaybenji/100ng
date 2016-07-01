@@ -22,8 +22,9 @@ const createSocket = function() {
         }
       },
       move() {
+        // TODO: interpolate movement!
         if (msg.id !== id) { // ignore this msg if it's us!
-          players[msg.id].style.top = msg.y; // update player position
+          players[msg.id].style.top = msg.y + '%'; // update player position
         }
       },
       destroy() {
@@ -39,7 +40,9 @@ const createSocket = function() {
 
   return {
     send(message) {
-      const msg = JSON.stringify(message);
+      // append client id to all outgoing messages
+      const messageWithId = Object.assign({}, message, {id: id});
+      const msg = JSON.stringify(messageWithId);
       ws.send(msg);
     }
   };
