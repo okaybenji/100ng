@@ -31,7 +31,7 @@ body {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 50vw;
+  left: 50%;
   border-left: 0.75vw dotted white;
 }
 
@@ -47,4 +47,14 @@ body {
   height: 5vw;
   background: white; /* default color */
   top: 5vw; /* start with paddle in the middle of its container (1/3 the container height) */
+}
+
+.ball {
+  position: absolute;
+  width: 1vw;
+  height: 1vw;
+  background: white;
+  /* default position to center court */
+  top: 50%;
+  left: 50%;
 }

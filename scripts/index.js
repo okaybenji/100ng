@@ -30,6 +30,7 @@ game.addEventListener('mousemove', function(event) {
     startY = event.clientY - maxY;
   }
 });
-/*game.onmousemove(function(event) {
-  
-});*/
+
+const ball = document.createElement('div');
+ball.classList.add('ball');
+game.appendChild(ball);
