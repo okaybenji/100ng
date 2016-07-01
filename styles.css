@@ -27,17 +27,24 @@ body {
 }
 
 #game:after {
-    content:"";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 50vw;
-    border-left: 0.75vw dotted white;
+  content:"";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50vw;
+  border-left: 0.75vw dotted white;
+}
+
+.paddleContainer {
+  position: relative;
+  width: 1vw;
+  height: 10vw;
 }
 
 .paddle {
-  position: relative;
+  position: absolute;
   width: 1vw;
   height: 5vw;
   background: white; /* default color */
+  top: 2.5vw; /* start with paddle in the middle of its container (half the container height) */
 }
