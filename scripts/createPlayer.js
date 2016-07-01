@@ -2,13 +2,8 @@ const createPlayer = function(game, options) {
   const paddleContainer = PaddleContainer();
   game.appendChild(paddleContainer);
 
-  // subtract container paddle dimensions to keep it from appearing partially off the court
-  // position paddle container after it's added so it has dimensions to calculate from
-  // TODO: set these based on values received from the server
-  paddleContainer.style.left = utils.randomIntBetween(0, game.offsetWidth - paddleContainer.offsetWidth);
-  paddleContainer.style.top = utils.randomIntBetween(0, game.offsetHeight - paddleContainer.offsetHeight);
-  //paddleContainer.style.left = game.offsetWidth - paddleContainer.offsetWidth;
-  //paddleContainer.style.top = game.offsetHeight - paddleContainer.offsetHeight;
+  paddleContainer.style.left = options.x + 'vw';
+  paddleContainer.style.top = options.y + 'vw';
 
   const paddle = Paddle();
   paddleContainer.appendChild(paddle);

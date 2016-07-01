@@ -23,10 +23,16 @@ wss.on('connection', function connection(ws) {
   const id = idGen();
   console.log(id, 'connected');
   ws.id = id;
+
+  const courtWidth = 98;
+  const courtHeight = 54.25;
+  const paddleContainerWidth = 1;
+  const paddleContainerHeight = 15;
+
   ws.position = {
     // TODO: will need to use vw values since we're using a scalable dom
-    x: utils.randomIntBetween(0, 256),
-    y: utils.randomIntBetween(0, 240)
+    x: utils.randomIntBetween(0, courtWidth - paddleContainerWidth),
+    y: utils.randomIntBetween(0, courtHeight - paddleContainerHeight)
   };
   ws.lastProcessedInput = { time: 0, position: ws.position };
 
