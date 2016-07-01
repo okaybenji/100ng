@@ -38,7 +38,7 @@ body {
 .paddleContainer {
   position: relative;
   width: 1vw;
-  height: 10vw;
+  height: 15vw;
 }
 
 .paddle {
@@ -46,5 +46,5 @@ body {
   width: 1vw;
   height: 5vw;
   background: white; /* default color */
-  top: 2.5vw; /* start with paddle in the middle of its container (half the container height) */
+  top: 5vw; /* start with paddle in the middle of its container (1/3 the container height) */
 }
