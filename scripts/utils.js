@@ -27,3 +27,7 @@ const utils = {
     return Number(numString);
   }*/
 };
+
+if (typeof module !== 'undefined') {
+  module.exports = utils;
+}

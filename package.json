@@ -1,0 +1,23 @@
+{
+  "name": "100ng",
+  "version": "0.0.1",
+  "description": "100-player Pong",
+  "main": "index.js",
+  "scripts": {
+    "start": "node scripts/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/okaybenji/100ng.git"
+  },
+  "author": "Benji Kay <okaybenji@gmail.com> (http://benjikay.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/okaybenji/100ng/issues"
+  },
+  "homepage": "https://github.com/okaybenji/100ng",
+  "dependencies": {
+    "ws": "^1.1.0"
+  }
+}
