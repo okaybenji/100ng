@@ -3,7 +3,7 @@ const utils = {
     return Math.floor(Math.random() * (max - min)) + min;
   },
   randomColor() {
-    const minBrightness = 50;
+    const minBrightness = 25;
 
     let color = 'hsl(';
     color += utils.randomIntBetween(0, 360) + ',';
@@ -11,7 +11,7 @@ const utils = {
     color += utils.randomIntBetween(minBrightness, 100) + '%)';
     return color;
   },
-  getPropertyValue(propName, element) {
+  /*getPropertyValue(propName, element) {
     return window.getComputedStyle(element).getPropertyValue(propName);
   },
   getWidth(element) {
@@ -25,5 +25,5 @@ const utils = {
     // removes anything from a string value which is not a digit, dot or minus sign
     const numString = value.replace(/[^-\d\.]/g, '');
     return Number(numString);
-  }
+  }*/
 };
