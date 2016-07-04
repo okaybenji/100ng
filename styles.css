@@ -35,7 +35,7 @@ body {
 }
 
 .paddleContainer {
-  position: relative;
+  position: absolute;
   width: 1vw;
   height: 15vw;
 }
