@@ -28,7 +28,7 @@ const createSocket = function() {
       id() {
         id = msg.id;
       },
-      spawn() {
+      spawnPlayer() {
         if (msg.id === id) {
           player = players[msg.id] = createPlayer(game, {x: msg.x, y: msg.y, isClient: true});
         } else {
@@ -36,13 +36,13 @@ const createSocket = function() {
         }
         updatePlayers();
       },
-      move() {
+      movePlayer() {
         // TODO: interpolate movement!
         if (msg.id !== id) { // ignore this msg if it's us!
           players[msg.id].paddle.style.top = msg.y + '%'; // update player position
         }
       },
-      destroy() {
+      destroyPlayer() {
         // TODO: test this -- it may not be working
         if (players[msg.id]) {
           console.log('destroy player:', msg.id);
@@ -53,6 +53,14 @@ const createSocket = function() {
           updatePlayers();
         }
       },
+      moveBall() {
+        ball.style.left = msg.x + '%';
+        ball.style.top = msg.y + '%';
+      },
+      score() {
+        scoreA.innerHTML = msg.score.a;
+        scoreB.innerHTML = msg.score.b;
+      }
     };
 
     messageHandlers[msg.type]();

@@ -55,3 +55,17 @@ body {
   top: 50%;
   left: 50%;
 }
+
+.score {
+  color: white;
+  font-size: 6vw;
+  position: absolute;
+}
+
+#a.score {
+  left: 45vw;
+}
+
+#b.score {
+  left: 51vw;
+}

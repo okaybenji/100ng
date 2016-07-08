@@ -28,7 +28,7 @@ const createPlayer = function(game, options) {
       }
 
       const percent = (newY / maxY) * 100;
-      socket.send({type: 'move', y: percent});
+      socket.send({type: 'movePlayer', y: percent});
     });
   }
 

@@ -41,10 +41,10 @@ const updatePlayerPositions = function() {
       }
     }());
     const y = utils.randomIntBetween(0, courtHeight - paddleContainerHeight);
-    wss.broadcast({type: 'destroy', id: ws.id});
+    wss.broadcast({type: 'destroyPlayer', id: ws.id});
     // randomize player positions
     ws.position = { x, y };
-    wss.broadcast({type: 'spawn', id: ws.id, x, y});
+    wss.broadcast({type: 'spawnPlayer', id: ws.id, x, y});
   });
 };
 
@@ -70,7 +70,7 @@ wss.on('connection', function connection(ws) {
   updatePlayerPositions();
 
   ws.on('close', function() {
-    wss.broadcast({type: 'destroy', id: id});
+    wss.broadcast({type: 'destroyPlayer', id: id});
     updatePlayerPositions();
   });
 
@@ -78,7 +78,7 @@ wss.on('connection', function connection(ws) {
 //    console.log('received message:', message);
     const msg = JSON.parse(message);
     const messageHandlers = {
-      move() {
+      movePlayer() {
         // TODO: if the new received position is within the server's known bounds for the client player,
         // update the position on the server
         // broadcast the new position to all connected clients
@@ -86,7 +86,41 @@ wss.on('connection', function connection(ws) {
         wss.broadcast(msg);
       }
     };
-
     messageHandlers[msg.type]();
   });
 });
+
+// server game loop
+const fps = 6;
+const refreshRate = 1000 / fps;
+let newBall = function() {
+  return {
+    position: { x: 50, y: 50 },
+    velocity: { x: -0.5, y: 0 }
+  };
+};
+let ball = newBall();
+let score = { a: 0, b: 0 }; // teams A & B
+
+const loop = setInterval(function() {
+  ball.position.x = ball.position.x + ball.velocity.x;
+  ball.position.y = ball.position.y + ball.velocity.y;
+
+  // bounce off the walls if we hit them
+  if (ball.position.y < 0 || ball.position.y > 100) {
+    ball.velocity.y = -ball.velocity.y;
+  }
+
+  // update score and reposition ball if a goal is scored
+  if (ball.position.x < 0) {
+    score.b++;
+    ball = newBall();
+    wss.broadcast({ type: 'score', score });
+  } else if (ball.position.x > 100) {
+    score.a++;
+    ball = newBall();
+    wss.broadcast({ type: 'score', score });
+  }
+
+  wss.broadcast({ type: 'moveBall', x: ball.position.x, y: ball.position.y });
+}, refreshRate);
