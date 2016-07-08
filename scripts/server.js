@@ -51,7 +51,7 @@ wss.on('connection', function connection(ws) {
     if (client.id === id) {
       return; // don't spawn ourself yet
     }
-    ws.sendStr({ type: 'spawn', id: client.id, x: client.x, y: client.y });
+    ws.sendStr({ type: 'spawn', id: client.id, x: client.position.x, y: client.position.y });
   });
 
   // broadcast our own position (and spawn)
