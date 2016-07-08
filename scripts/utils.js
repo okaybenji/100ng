@@ -4,10 +4,11 @@ const utils = {
   },
   randomColor() {
     const minBrightness = 25;
+    const minSaturation = 50;
 
     let color = 'hsl(';
     color += utils.randomIntBetween(0, 360) + ',';
-    color += utils.randomIntBetween(0, 100) + '%,';
+    color += utils.randomIntBetween(minSaturation, 100) + '%,';
     color += utils.randomIntBetween(minBrightness, 100) + '%)';
     return color;
   },
