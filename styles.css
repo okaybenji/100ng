@@ -37,7 +37,6 @@ body {
 .paddleContainer {
   position: absolute;
   width: 1vw;
-  height: 15vw;
 }
 
 .paddle {
@@ -45,7 +44,6 @@ body {
   width: 1vw;
   height: 5vw;
   background: white; /* default color */
-  top: 5vw; /* start with paddle in the middle of its container (1/3 the container height) */
 }
 
 .ball {

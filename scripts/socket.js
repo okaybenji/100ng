@@ -2,6 +2,20 @@
 let players = {};
 let player; // ourself/client avatar
 
+// update players' y reach based on number of players
+// the more players connected, the less players should be able to move
+const updatePlayers = function() {
+  const playerKeys = Object.keys(players);
+  const numPlayers = playerKeys.length;
+  var reach = utils.getReach(numPlayers);
+
+  playerKeys.forEach(function(key) {
+    const plr = players[key];
+    plr.paddleContainer.style.height = reach + 'vw';
+    plr.paddle.style.top = plr.paddleContainer.style.height / 3 + 'vw';
+  });
+};
+
 const createSocket = function() {
   const ws = new WebSocket('ws://localhost:8080');
   let id;
@@ -20,6 +34,7 @@ const createSocket = function() {
         } else {
           players[msg.id] = createPlayer(game, {x: msg.x, y: msg.y});
         }
+        updatePlayers();
       },
       move() {
         // TODO: interpolate movement!
@@ -30,10 +45,12 @@ const createSocket = function() {
       destroy() {
         // TODO: test this -- it may not be working
         if (players[msg.id]) {
+          console.log('destroy player:', msg.id);
           var plr = players[msg.id];
           plr.paddleContainer.removeChild(plr.paddle);
           game.removeChild(plr.paddleContainer);
           plr = null;
+          updatePlayers();
         }
       },
     };

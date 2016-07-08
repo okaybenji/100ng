@@ -19,22 +19,39 @@ const idGen = (function() {
   };
 }());
 
+const updatePlayerPositions = function() {
+  const courtWidth = 98;
+  const courtHeight = 54.25;
+  const paddleContainerWidth = 1;
+  const numPlayers = wss.clients.length;
+  const paddleContainerHeight = utils.getReach(numPlayers);
+  const playerCountIsEven = numPlayers % 2 === 0;
+
+  wss.clients.forEach(function(ws) {
+    const x = (function() {
+      if (ws.position) {
+        return ws.position.x;
+      }
+      if (playerCountIsEven) {
+        // spawn on right side
+        return utils.randomIntBetween(courtWidth / 2, courtWidth - paddleContainerWidth);
+      } else {
+        // spawn on left side
+        return utils.randomIntBetween(0, courtWidth / 2 - paddleContainerWidth);
+      }
+    }());
+    const y = utils.randomIntBetween(0, courtHeight - paddleContainerHeight);
+    wss.broadcast({type: 'destroy', id: ws.id});
+    // randomize player positions
+    ws.position = { x, y };
+    wss.broadcast({type: 'spawn', id: ws.id, x, y});
+  });
+};
+
 wss.on('connection', function connection(ws) {
   const id = idGen();
   console.log(id, 'connected');
   ws.id = id;
-
-  const courtWidth = 98;
-  const courtHeight = 54.25;
-  const paddleContainerWidth = 1;
-  const paddleContainerHeight = 15;
-
-  ws.position = {
-    // TODO: will need to use vw values since we're using a scalable dom
-    x: utils.randomIntBetween(0, courtWidth - paddleContainerWidth),
-    y: utils.randomIntBetween(0, courtHeight - paddleContainerHeight)
-  };
-  ws.lastProcessedInput = { time: 0, position: ws.position };
 
   // we always want to stringify our data
   ws.sendStr = function(msg) {
@@ -46,24 +63,15 @@ wss.on('connection', function connection(ws) {
 
   ws.sendStr({ type: 'id', id }); // inform client of its id
 
-  // spawn all existing players on client
-  wss.clients.forEach(function(client) {
-    if (client.id === id) {
-      return; // don't spawn ourself yet
-    }
-    ws.sendStr({ type: 'spawn', id: client.id, x: client.position.x, y: client.position.y });
-  });
-
-  // broadcast our own position (and spawn)
-  // TODO: bear in mind we have an unchanging paddle container position
-  // and a vertical position within that which can change.
-  // take this into account.
-  // also consider removing the container element and simply defining a
-  // max and min y value.
-  wss.broadcast({ type: 'spawn', id, x: ws.position.x, y: ws.position.y });
+  // spawn/respawn all players with new positions based on number of connected clients
+  // TODO: bear in mind we have a paddle container position (player movement boundaries)
+  // and a vertical position within that which player can set by moving the mouse.
+  // consider removing the container element and simply defining a max and min y value.
+  updatePlayerPositions();
 
   ws.on('close', function() {
     wss.broadcast({type: 'destroy', id: id});
+    updatePlayerPositions();
   });
 
   ws.on('message', function incoming(message) {

@@ -1,4 +1,5 @@
 const createPlayer = function(game, options) {
+//  console.log('creating player with options:', options);
   const paddleContainer = PaddleContainer();
   game.appendChild(paddleContainer);
 
