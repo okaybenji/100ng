@@ -93,14 +93,18 @@ wss.on('connection', function connection(ws) {
 // server game loop
 const fps = 6;
 const refreshRate = 1000 / fps;
-let newBall = function() {
+const newBall = function() {
   return {
     position: { x: 50, y: 50 },
-    velocity: { x: -0.5, y: 0 }
+    velocity: { x: -2, y: -3 }
   };
 };
+const newScore = function() {
+  // teams A & B
+  return { a: 0, b: 0 }
+}
 let ball = newBall();
-let score = { a: 0, b: 0 }; // teams A & B
+let score = newScore();
 
 const loop = setInterval(function() {
   ball.position.x = ball.position.x + ball.velocity.x;
@@ -122,5 +126,10 @@ const loop = setInterval(function() {
     wss.broadcast({ type: 'score', score });
   }
 
-  wss.broadcast({ type: 'moveBall', x: ball.position.x, y: ball.position.y });
+  // reset game at 11 points
+  if (score.a >= 11 || score.b >= 11) {
+    score = newScore();
+  } else {
+    wss.broadcast({ type: 'moveBall', x: ball.position.x, y: ball.position.y });
+  }
 }, refreshRate);
