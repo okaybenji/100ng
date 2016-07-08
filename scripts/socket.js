@@ -24,13 +24,16 @@ const createSocket = function() {
       move() {
         // TODO: interpolate movement!
         if (msg.id !== id) { // ignore this msg if it's us!
-          players[msg.id].style.top = msg.y + '%'; // update player position
+          players[msg.id].paddle.style.top = msg.y + '%'; // update player position
         }
       },
       destroy() {
         // TODO: test this -- it may not be working
         if (players[msg.id]) {
-          players[msg.id] = null;
+          var plr = players[msg.id];
+          plr.paddleContainer.removeChild(plr.paddle);
+          game.removeChild(plr.paddleContainer);
+          plr = null;
         }
       },
     };

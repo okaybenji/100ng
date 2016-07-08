@@ -31,5 +31,5 @@ const createPlayer = function(game, options) {
     });
   }
 
-  return paddle;
+  return { paddleContainer, paddle };
 };
