@@ -49,7 +49,7 @@ const createSocket = function() {
           var plr = players[msg.id];
           plr.paddleContainer.removeChild(plr.paddle);
           game.removeChild(plr.paddleContainer);
-          plr = null;
+          delete players[msg.id]; // remove player from players to update reach // TODO: is there a better way?
           updatePlayers();
         }
       },

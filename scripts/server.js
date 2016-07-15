@@ -19,13 +19,15 @@ const idGen = (function() {
   };
 }());
 
+let paddleContainerHeight;
+
 const updatePlayerPositions = function() {
   const courtWidth = 98;
   const courtHeight = 54.25;
   const paddleContainerWidth = 1;
   const numPlayers = wss.clients.length;
-  const paddleContainerHeight = utils.getReach(numPlayers);
   const playerCountIsEven = numPlayers % 2 === 0;
+  paddleContainerHeight = utils.getReach(numPlayers);
 
   wss.clients.forEach(function(ws) {
     const x = (function() {
@@ -52,6 +54,7 @@ wss.on('connection', function connection(ws) {
   const id = idGen();
   console.log(id, 'connected');
   ws.id = id;
+  ws.paddle = { y: 33 }; // initialize paddle position within paddleContainer to 33%
 
   // we always want to stringify our data
   ws.sendStr = function(msg) {
@@ -75,14 +78,11 @@ wss.on('connection', function connection(ws) {
   });
 
   ws.on('message', function incoming(message) {
-//    console.log('received message:', message);
     const msg = JSON.parse(message);
     const messageHandlers = {
       movePlayer() {
-        // TODO: if the new received position is within the server's known bounds for the client player,
-        // update the position on the server
-        // broadcast the new position to all connected clients
-        // TODO: only do this, again, if the position is within the expected bounds
+        // TODO: see what happens if client sends a message with a y < 0 or > 100. prevent cheating if necessary.
+        ws.paddle = { y: msg.y };
         wss.broadcast(msg);
       }
     };
@@ -114,6 +114,25 @@ const loop = setInterval(function() {
   if (ball.position.y < 0 || ball.position.y > 100) {
     ball.velocity.y = -ball.velocity.y;
   }
+
+  // bounce off of paddles if we hit them
+  // loop through paddles and calculate bounds of each based on paddle height, current positions and container heights
+  let hasBounced = false;
+  wss.clients.forEach(function(client) {
+    if (hasBounced) {
+      return;
+    }
+    const paddleHeight = 5;
+    const paddleWidth = 1;
+
+    if (ball.position.x >= client.position.x &&
+        ball.position.x <= client.position.x + paddleWidth &&
+        ball.position.y >= client.position.y + ((client.paddle.y / 100) * paddleContainerHeight) &&
+        ball.position.y <= client.position.y + ((client.paddle.y / 100) * paddleContainerHeight) + paddleHeight) {
+        ball.velocity.x = -ball.velocity.x;
+        hasBounced = true;
+    }
+  });
 
   // update score and reposition ball if a goal is scored
   if (ball.position.x < 0) {

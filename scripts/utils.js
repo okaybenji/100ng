@@ -1,7 +1,10 @@
+'use strict';
+
 const utils = {
   randomIntBetween(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
   },
+
   randomColor() {
     const minBrightness = 25;
     const minSaturation = 50;
@@ -12,6 +15,7 @@ const utils = {
     color += utils.randomIntBetween(minBrightness, 100) + '%)';
     return color;
   },
+
   /**
    * Calculate players' y reach based on number of players.
    * The more players connected, the less players should be able to move
