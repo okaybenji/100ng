@@ -89,12 +89,16 @@
   });
 
   // server game loop
-  const fps = 12;
+  const fps = 60;
   const refreshRate = 1000 / fps;
+  const broadcastRate = 6; // broadcasts per second
+  const framesPerBroadcast = fps / broadcastRate; // skip this many frames between updating clients
+  let frame = 0;
+
   const newBall = function() {
     return {
       position: { x: 50, y: 50 },
-      velocity: { x: -1, y: -1.5 }
+      velocity: { x: -0.2, y: -0.3 }
     };
   };
   const newScore = function() {
@@ -103,13 +107,16 @@
   };
   let ball = newBall();
   let score = newScore();
+  // let willBounce = false; // whether ball will bounce next frame
 
   const loop = setInterval(function() {
+    const ballWidth = 1;
+    const ballHeight = 1;
     ball.position.x = ball.position.x + ball.velocity.x;
     ball.position.y = ball.position.y + ball.velocity.y;
 
     // bounce off the walls if we hit them
-    if (ball.position.y < 0 || ball.position.y > 100) {
+    if (ball.position.y < 0 || ball.position.y + ballHeight > 100) {
       ball.velocity.y = -ball.velocity.y;
     }
 
@@ -122,6 +129,7 @@
       }
       const paddleHeight = 5;
       const paddleWidth = 1;
+
       // absolute paddle top/left position expressed as percentage of court width and height
       const paddle = {
         position: {
@@ -130,15 +138,31 @@
         }
       };
 
-      console.log({ball: ball.position, paddle: paddle.position});
-      if (ball.position.x >= paddle.position.x &&
+      /*if (ball.position.x + ballWidth >= paddle.position.x &&
           ball.position.x <= paddle.position.x + paddleWidth &&
-          ball.position.y >= paddle.position.y &&
+          ball.position.y + ballHeight >= paddle.position.y &&
           ball.position.y <= paddle.position.y + paddleHeight) {
           ball.velocity.x = -ball.velocity.x;
           hasBounced = true;
+      }*/
+      // if ball is on one side of the paddle now but will be on the other side of the paddle next frame
+      // and it's within the y bounds, bounce next frame
+      if ((ball.position.x > paddle.position.x && ball.position.x + ball.velocity.x <= paddle.position.x) ||
+          (ball.position.x < paddle.position.x && ball.position.x + ball.velocity.x >= paddle.position.x) &&
+          // TODO: since paddles are so tall, just checking whether ball is within paddle bounds
+          // may want to update to work like x check in case ball y velocity gets really fast
+          // or paddles get shorter
+          ball.position.y + ballHeight >= paddle.position.y && ball.position.y <= paddle.position.y + paddleHeight
+         ) {
+        //willBounce = true;
+        ball.velocity.x = -ball.velocity.x;
       }
     });
+
+    /*if (willBounce) {
+      ball.velocity.x = -ball.velocity.x;
+      willBounce = false;
+    }*/
 
     // update score and reposition ball if a goal is scored
     if (ball.position.x < 0) {
@@ -155,7 +179,13 @@
     if (score.a >= 11 || score.b >= 11) {
       score = newScore();
     } else {
-      wss.broadcast({ type: 'moveBall', x: ball.position.x, y: ball.position.y });
+      if (frame % framesPerBroadcast === 0) {
+        wss.broadcast({ type: 'moveBall', x: ball.position.x, y: ball.position.y });
+      }
+      frame++;
+      if (frame > framesPerBroadcast) {
+        frame = 0;
+      }
     }
   }, refreshRate);
 }());
