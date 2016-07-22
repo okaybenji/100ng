@@ -4,7 +4,7 @@
   "description": "100-player Pong",
   "main": "index.js",
   "scripts": {
-    "start": "node scripts/server.js",
+    "start": "node scripts/server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

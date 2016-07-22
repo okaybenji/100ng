@@ -1,21 +1,20 @@
-const createPlayer = function(game, options) {
-//  console.log('creating player with options:', options);
-  const paddleContainer = PaddleContainer();
+const createPlayer = function(game, socket, options) {
+  // paddleContainer is invisible div container which defines a paddle's boundaries
+  const paddleContainer = document.createElement('div');
+  paddleContainer.classList.add('paddleContainer');
   game.appendChild(paddleContainer);
+  paddleContainer.style.left = options.x + '%';
+  paddleContainer.style.top = options.y + '%';
 
-  paddleContainer.style.left = options.x + 'vw';
-  paddleContainer.style.top = options.y + 'vw';
-
-  const paddle = Paddle();
-  paddleContainer.appendChild(paddle);
-
+  const paddle = document.createElement('div');
+  paddle.classList.add('paddle');
   paddle.style.backgroundColor = utils.randomColor();
   paddleContainer.appendChild(paddle);
-  
+
   if (options.isClient) {
     let startY = 0;
 
-    game.addEventListener('mousemove', function(event) {
+    game.addEventListener('mousemove', function movePaddle(event) {
       let newY = event.clientY - startY;
       const maxY = paddleContainer.offsetHeight - paddle.offsetHeight;
       newY = newY < 0 ? 0 : newY > maxY ? maxY : newY;
