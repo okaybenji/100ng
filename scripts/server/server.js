@@ -137,17 +137,25 @@
         }
       };
 
+      if (ball.position.x + ballWidth >= paddle.position.x &&
+        ball.position.x <= paddle.position.x + paddleWidth &&
+        ball.position.y + ballHeight >= paddle.position.y &&
+        ball.position.y <= paddle.position.y + paddleHeight) {
+        ball.velocity.x = -ball.velocity.x;
+        hasBounced = true;
+      }
       // if ball is on one side of the paddle now but will be on the other side of the paddle next frame
       // and it's within the y bounds, bounce next frame
-      if ((ball.position.x > paddle.position.x && ball.position.x + ball.velocity.x <= paddle.position.x) ||
+      /*if ((ball.position.x > paddle.position.x && ball.position.x + ball.velocity.x <= paddle.position.x) ||
           (ball.position.x < paddle.position.x && ball.position.x + ball.velocity.x >= paddle.position.x) &&
           // TODO: since paddles are so tall, just checking whether ball is within paddle bounds
           // may want to update to work like x check in case ball y velocity gets really fast
-          // or paddles get shorter
+          // or paddles get shorter... but not sure how that would work since the ball usually
+          // won't cross the x and y bounds in the same frame...
           ball.position.y + ballHeight >= paddle.position.y && ball.position.y <= paddle.position.y + paddleHeight
          ) {
         ball.velocity.x = -ball.velocity.x;
-      }
+      }*/
     });
 
     // update score and reposition ball if a goal is scored
