@@ -1,6 +1,4 @@
-const createPlayer = function(game, options) {
-//  console.log('creating player with options:', options);
-
+const createPlayer = function(game, socket, options) {
   // paddleContainer is invisible div container which defines a paddle's boundaries
   const paddleContainer = document.createElement('div');
   paddleContainer.classList.add('paddleContainer');
@@ -35,11 +33,3 @@ const createPlayer = function(game, options) {
 
   return { paddleContainer, paddle };
 };
-
-const game = document.querySelector('#game');
-const socket = createSocket(); // handles updating game state (score, ball position, players) according to server messages
-const scoreA = document.querySelector('#a.score');
-const scoreB = document.querySelector('#b.score');
-const ball = document.createElement('div');
-ball.classList.add('ball');
-game.appendChild(ball);
