@@ -3,7 +3,7 @@ let players = {};
 let player; // ourself/client avatar
 
 (function startGame() {
-  const ws = new WebSocket('ws://l00ng-okaybenji.c9users.io:8080');
+  const ws = new WebSocket('wss://l00ng-okaybenji.c9users.io:8080');
   const game = document.querySelector('#game');
   const scoreA = document.querySelector('#a.score');
   const scoreB = document.querySelector('#b.score');
