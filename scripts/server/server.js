@@ -23,8 +23,6 @@
   let paddleContainerHeight;
 
   const updatePlayerPositions = function() {
-    const courtWidth = 98;
-    const courtHeight = 54.25;
     const paddleContainerWidth = 1;
     const numPlayers = wss.clients.length;
     const playerCountIsEven = numPlayers % 2 === 0;
@@ -37,13 +35,13 @@
         }
         if (playerCountIsEven) {
           // spawn on right side
-          return utils.randomIntBetween(courtWidth / 2, courtWidth - paddleContainerWidth);
+          return utils.randomIntBetween(50, 100 - paddleContainerWidth);
         } else {
           // spawn on left side
-          return utils.randomIntBetween(0, courtWidth / 2 - paddleContainerWidth);
+          return utils.randomIntBetween(0, 50 - paddleContainerWidth);
         }
       }());
-      const y = utils.randomIntBetween(0, courtHeight - paddleContainerHeight);
+      const y = utils.randomIntBetween(0, 100 - paddleContainerHeight);
       wss.broadcast({type: 'destroyPlayer', id: ws.id});
       // randomize player positions
       ws.paddleContainer = { x, y };
@@ -91,12 +89,12 @@
   });
 
   // server game loop
-  const fps = 6;
+  const fps = 12;
   const refreshRate = 1000 / fps;
   const newBall = function() {
     return {
       position: { x: 50, y: 50 },
-      velocity: { x: -2, y: -3 }
+      velocity: { x: -1, y: -1.5 }
     };
   };
   const newScore = function() {
@@ -128,8 +126,7 @@
       const paddle = {
         position: {
           x: client.paddleContainer.x,
-//          y: client.paddleContainer.y + ((client.paddle.y / 100) * paddleContainerHeight)
-          y: client.paddleContainer.y + ((client.paddle.y / 100) * (paddleContainerHeight / 54.1) * 100)
+          y: client.paddleContainer.y + ((client.paddle.y / 100) * paddleContainerHeight)
         }
       };
 

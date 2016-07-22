@@ -3,8 +3,8 @@ const createPlayer = function(game, socket, options) {
   const paddleContainer = document.createElement('div');
   paddleContainer.classList.add('paddleContainer');
   game.appendChild(paddleContainer);
-  paddleContainer.style.left = options.x + 'vw';
-  paddleContainer.style.top = options.y + 'vw';
+  paddleContainer.style.left = options.x + '%';
+  paddleContainer.style.top = options.y + '%';
 
   const paddle = document.createElement('div');
   paddle.classList.add('paddle');

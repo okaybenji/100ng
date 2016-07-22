@@ -25,10 +25,8 @@ const utils = {
   getReach(numPlayers) {
     // TODO: tune this
     // right now, 1 or 2 players gives 100%, 3 or 4 gives 1/2, 5 or 6 gives 1/3, 7 or 8 gives 1/4, etc.
-    const height = 54.1; // height expressed in vw (percentage of width)
     const numPlayersIsEven = numPlayers % 2 === 0;
-    return numPlayersIsEven ? 54.1 / (numPlayers / 2) : 54.1 / ((numPlayers + 1) / 2);
-//    return numPlayersIsEven ? 100 / (numPlayers / 2) : 100 / ((numPlayers + 1) / 2);
+    return numPlayersIsEven ? 100 / (numPlayers / 2) : 100 / ((numPlayers + 1) / 2);
   }
 };
 
