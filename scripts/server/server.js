@@ -107,7 +107,6 @@
   };
   let ball = newBall();
   let score = newScore();
-  // let willBounce = false; // whether ball will bounce next frame
 
   const loop = setInterval(function() {
     const ballWidth = 1;
@@ -138,13 +137,6 @@
         }
       };
 
-      /*if (ball.position.x + ballWidth >= paddle.position.x &&
-          ball.position.x <= paddle.position.x + paddleWidth &&
-          ball.position.y + ballHeight >= paddle.position.y &&
-          ball.position.y <= paddle.position.y + paddleHeight) {
-          ball.velocity.x = -ball.velocity.x;
-          hasBounced = true;
-      }*/
       // if ball is on one side of the paddle now but will be on the other side of the paddle next frame
       // and it's within the y bounds, bounce next frame
       if ((ball.position.x > paddle.position.x && ball.position.x + ball.velocity.x <= paddle.position.x) ||
@@ -154,15 +146,9 @@
           // or paddles get shorter
           ball.position.y + ballHeight >= paddle.position.y && ball.position.y <= paddle.position.y + paddleHeight
          ) {
-        //willBounce = true;
         ball.velocity.x = -ball.velocity.x;
       }
     });
-
-    /*if (willBounce) {
-      ball.velocity.x = -ball.velocity.x;
-      willBounce = false;
-    }*/
 
     // update score and reposition ball if a goal is scored
     if (ball.position.x < 0) {
