@@ -24,6 +24,8 @@ let player; // ourself/client avatar
   const updatePlayers = function() {
     const playerKeys = Object.keys(players);
     const numPlayers = playerKeys.length;
+    const height = 54.1; // height expressed in vw (percentage of width)
+//    var reach = utils.getReach(numPlayers) * (height / 100);
     var reach = utils.getReach(numPlayers);
 
     playerKeys.forEach(function(key) {

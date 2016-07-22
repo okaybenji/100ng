@@ -32,8 +32,8 @@
 
     wss.clients.forEach(function(ws) {
       const x = (function() {
-        if (ws.position) {
-          return ws.position.x;
+        if (ws.paddleContainer) {
+          return ws.paddleContainer.x;
         }
         if (playerCountIsEven) {
           // spawn on right side
@@ -46,7 +46,7 @@
       const y = utils.randomIntBetween(0, courtHeight - paddleContainerHeight);
       wss.broadcast({type: 'destroyPlayer', id: ws.id});
       // randomize player positions
-      ws.position = { x, y };
+      ws.paddleContainer = { x, y };
       wss.broadcast({type: 'spawnPlayer', id: ws.id, x, y});
     });
   };
@@ -60,21 +60,20 @@
     // we always want to stringify our data
     ws.sendStr = function(msg) {
       if (wss.clients.indexOf(ws) === -1) {
-        return;
+        return; // don't send if client has disconnected or otherwise does not exist
       }
       ws.send(JSON.stringify(msg));
     };
 
     ws.sendStr({ type: 'id', id }); // inform client of its id
 
-    // spawn/respawn all players with new positions based on number of connected clients
-    // TODO: bear in mind we have a paddle container position (player movement boundaries)
+    // spawn/respawn all players with new positions based on number of connected clients.
+    // bear in mind we have a paddle container (player movement boundaries) position
     // and a vertical position within that which player can set by moving the mouse.
-    // consider removing the container element and simply defining a max and min y value.
     updatePlayerPositions();
 
     ws.on('close', function() {
-      wss.broadcast({type: 'destroyPlayer', id: id});
+      wss.broadcast({ type: 'destroyPlayer', id: id });
       updatePlayerPositions();
     });
 
@@ -125,11 +124,20 @@
       }
       const paddleHeight = 5;
       const paddleWidth = 1;
+      // absolute paddle top/left position expressed as percentage of court width and height
+      const paddle = {
+        position: {
+          x: client.paddleContainer.x,
+//          y: client.paddleContainer.y + ((client.paddle.y / 100) * paddleContainerHeight)
+          y: client.paddleContainer.y + ((client.paddle.y / 100) * (paddleContainerHeight / 54.1) * 100)
+        }
+      };
 
-      if (ball.position.x >= client.position.x &&
-          ball.position.x <= client.position.x + paddleWidth &&
-          ball.position.y >= client.position.y + ((client.paddle.y / 100) * paddleContainerHeight) &&
-          ball.position.y <= client.position.y + ((client.paddle.y / 100) * paddleContainerHeight) + paddleHeight) {
+      console.log({ball: ball.position, paddle: paddle.position});
+      if (ball.position.x >= paddle.position.x &&
+          ball.position.x <= paddle.position.x + paddleWidth &&
+          ball.position.y >= paddle.position.y &&
+          ball.position.y <= paddle.position.y + paddleHeight) {
           ball.velocity.x = -ball.velocity.x;
           hasBounced = true;
       }
