@@ -3,7 +3,8 @@ let players = {};
 let player; // ourself/client avatar
 
 (function startGame() {
-  const ws = new WebSocket('wss://138.68.12.151:8080'); // Digital Ocean server
+  // const ws = new WebSocket('wss://138.68.12.151:8080'); // Digital Ocean server -- does NOT work over WSS
+  const ws = new WebSocket('wss://l00ng-okaybenji.c9users.io:8080'); // Cloud 9 server -- works over WSS
   const game = document.querySelector('#game');
   const scoreA = document.querySelector('#a.score');
   const scoreB = document.querySelector('#b.score');
