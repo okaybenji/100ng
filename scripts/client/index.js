@@ -33,6 +33,13 @@ let player; // ourself/client avatar
     });
   };
 
+  const destroy = function(playerId) {
+    var plr = players[playerId];
+    plr.paddleContainer.removeChild(plr.paddle);
+    game.removeChild(plr.paddleContainer);
+    delete players[playerId]; // remove player from players to update reach
+  };
+
   ws.onmessage = function(data, flags) {
     const msg = JSON.parse(data.data);
     // console.log('received message:', msg);
@@ -60,10 +67,7 @@ let player; // ourself/client avatar
       },
       destroyPlayer() {
         if (players[msg.id]) {
-          var plr = players[msg.id];
-          plr.paddleContainer.removeChild(plr.paddle);
-          game.removeChild(plr.paddleContainer);
-          delete players[msg.id]; // remove player from players to update reach // TODO: is there a better way?
+          destroy(msg.id);
           updatePlayers();
         }
       },
@@ -78,5 +82,15 @@ let player; // ourself/client avatar
     };
 
     messageHandlers[msg.type]();
+  };
+
+  // auto-reconnect if server reboots
+  ws.onclose = function() {
+    setTimeout(function() {
+      for (let plr in players) {
+        destroy(plr);
+      }
+      startGame();
+    }, 3000);
   };
 }());

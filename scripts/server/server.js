@@ -151,8 +151,8 @@
         return a.position.x < b.position.x + b.width &&
         a.position.x + a.width > b.position.x &&
         a.position.y < b.position.y + b.height &&
-        a.height + a.position.y > b.position.y
-      }
+        a.height + a.position.y > b.position.y;
+      };
 
       var ballIntersectsPaddle = objectsAreColliding(paddle, Object.assign({}, ball, {width: ballSize, height: ballSize}));
 
