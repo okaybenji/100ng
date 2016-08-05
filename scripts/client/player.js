@@ -10,6 +10,7 @@ const createPlayer = function(game, socket, options) {
   paddle.classList.add('paddle');
   paddle.style.backgroundColor = utils.randomColor();
   paddleContainer.appendChild(paddle);
+  paddle.style.top = '45%';
 
   if (options.isClient) {
     let startY = 0;

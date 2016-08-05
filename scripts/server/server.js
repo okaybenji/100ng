@@ -66,7 +66,7 @@
       wss.broadcast({type: 'destroyPlayer', id: ws.id});
       // randomize player positions
       ws.paddleContainer = { x, y };
-      ws.paddle = { y: 0 }; // reset server paddle position
+      ws.paddle = { y: 45 }; // reset server paddle position // TODO: this is 50 (half court height) - 10/2 (half paddle height); store paddle height in some central location and share it
       wss.broadcast({type: 'spawnPlayer', id: ws.id, x, y});
     });
   };
@@ -75,7 +75,7 @@
     const id = idGen();
     console.log(id, 'connected');
     ws.id = id;
-    ws.paddle = { y: 0 }; // initialize paddle position within paddleContainer
+    ws.paddle = { y: 45 }; // initialize paddle position within paddleContainer
 
     // we always want to stringify our data
     ws.sendStr = function(msg) {
