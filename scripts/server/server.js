@@ -91,14 +91,15 @@
   // server game loop
   const fps = 60;
   const refreshRate = 1000 / fps;
-  const broadcastRate = 6; // broadcasts per second
+  const broadcastRate = 12; // broadcasts per second
   const framesPerBroadcast = fps / broadcastRate; // skip this many frames between updating clients
+  const ballSize = 2; // ball width and height // TODO: what the heck? should be 1, but doubling the value makes it work better
   let frame = 0;
 
   const newBall = function() {
     return {
-      position: { x: 50, y: 50 },
-      velocity: { x: -0.2, y: -0.3 }
+      position: { x: 50 - (ballSize / 2), y: 50 - (ballSize / 2) },
+      velocity: { x: -0.4, y: 0 }
     };
   };
   const newScore = function() {
@@ -109,13 +110,11 @@
   let score = newScore();
 
   const loop = setInterval(function() {
-    const ballWidth = 1;
-    const ballHeight = 1;
     ball.position.x = ball.position.x + ball.velocity.x;
     ball.position.y = ball.position.y + ball.velocity.y;
 
     // bounce off the walls if we hit them
-    if (ball.position.y < 0 || ball.position.y + ballHeight > 100) {
+    if (ball.position.y < 0 || ball.position.y + ballSize > 100) {
       ball.velocity.y = -ball.velocity.y;
     }
 
@@ -126,23 +125,46 @@
       if (hasBounced) {
         return;
       }
-      const paddleHeight = 5;
-      const paddleWidth = 1;
 
       // absolute paddle top/left position expressed as percentage of court width and height
+      // TODO: again, what the heck? paddle height should be 5, but it didn't work until i doubled it
+      // could this have something to do with the 16:9 aspect ratio and vws?
       const paddle = {
+        width: 1,
+        height: 10,
         position: {
           x: client.paddleContainer.x,
           y: client.paddleContainer.y + ((client.paddle.y / 100) * paddleContainerHeight)
         }
       };
 
-      if (ball.position.x + ballWidth >= paddle.position.x &&
-        ball.position.x <= paddle.position.x + paddleWidth &&
-        ball.position.y + ballHeight >= paddle.position.y &&
-        ball.position.y <= paddle.position.y + paddleHeight) {
-        ball.velocity.x = -ball.velocity.x;
-        hasBounced = true;
+      var objectsAreColliding = function(a, b) {
+        return a.position.x < b.position.x + b.width &&
+        a.position.x + a.width > b.position.x &&
+        a.position.y < b.position.y + b.height &&
+        a.height + a.position.y > b.position.y
+      }
+   
+      var ballIntersectsPaddle = objectsAreColliding(paddle, Object.assign({}, ball, {width: ballSize, height: ballSize}));
+
+      if (ballIntersectsPaddle) {
+        (function bounceOffPaddle() {
+          // ensure ball doesn't get stuck in paddle
+          if (ball.velocity.x > 0) { // ball hits paddle from the left
+            ball.position.x = paddle.position.x - ballSize;
+          } else { // from the right
+            ball.position.x = paddle.position.x + paddle.width;
+          }
+          // this calculation borrowed/adapted from Max Wihlborg
+          // https://www.youtube.com/watch?v=KApAJhkkqkA
+          // allows the player to alter the direction of the ball based on where it hits the paddle
+          var n = (ball.position.y + ballSize - paddle.position.y) / (paddle.height + ballSize);
+          var fortyFiveDegrees = 0.25 * Math.PI;
+          var phi = fortyFiveDegrees * (2 * n - 1);
+          ball.velocity.x = -ball.velocity.x * Math.cos(phi);
+          ball.velocity.y = Math.sin(phi);
+          hasBounced = true;
+        }());
       }
       // if ball is on one side of the paddle now but will be on the other side of the paddle next frame
       // and it's within the y bounds, bounce next frame
