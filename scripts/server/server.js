@@ -192,8 +192,8 @@
       wss.broadcast({ type: 'score', score });
     }
 
-    // reset game at 11 points
-    if (score.a >= 11 || score.b >= 11) {
+    // reset game at 7 points
+    if (score.a >= 7 || score.b >= 7) {
       score = newScore();
     } else {
       if (frame % framesPerBroadcast === 0) {
