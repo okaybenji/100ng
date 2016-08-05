@@ -34,11 +34,6 @@ body {
   border-left: 0.75vw dotted white;
 }
 
-.paddleContainer {
-  position: absolute;
-  width: 1vw;
-}
-
 .paddle {
   position: absolute;
   width: 1vw;
