@@ -91,7 +91,7 @@
   // server game loop
   const fps = 60;
   const refreshRate = 1000 / fps;
-  const broadcastRate = 12; // broadcasts per second
+  const broadcastRate = 6; // broadcasts per second
   const framesPerBroadcast = fps / broadcastRate; // skip this many frames between updating clients
   const ballSize = 2; // ball width and height // TODO: what the heck? should be 1, but doubling the value makes it work better
   let frame = 0;
@@ -144,7 +144,7 @@
         a.position.y < b.position.y + b.height &&
         a.height + a.position.y > b.position.y
       }
-   
+
       var ballIntersectsPaddle = objectsAreColliding(paddle, Object.assign({}, ball, {width: ballSize, height: ballSize}));
 
       if (ballIntersectsPaddle) {
@@ -158,10 +158,11 @@
           // this calculation borrowed/adapted from Max Wihlborg
           // https://www.youtube.com/watch?v=KApAJhkkqkA
           // allows the player to alter the direction of the ball based on where it hits the paddle
-          var n = (ball.position.y + ballSize - paddle.position.y) / (paddle.height + ballSize);
+          var n = (ball.position.y + ballSize - paddle.position.y) / (paddle.height + ballSize); // normalized -- 0 to 1
           var fortyFiveDegrees = 0.25 * Math.PI;
-          var phi = fortyFiveDegrees * (2 * n - 1);
-          ball.velocity.x = -ball.velocity.x * Math.cos(phi);
+          var n2 = 2 * n - 1; // gives a number from -1 to 1
+          var phi = fortyFiveDegrees * n2;
+          ball.velocity.x = -ball.velocity.x;
           ball.velocity.y = Math.sin(phi);
           hasBounced = true;
         }());
