@@ -91,7 +91,7 @@
   // server game loop
   const fps = 60;
   const refreshRate = 1000 / fps;
-  const broadcastRate = 6; // broadcasts per second
+  const broadcastRate = 24; // broadcasts per second
   const framesPerBroadcast = fps / broadcastRate; // skip this many frames between updating clients
   const ballSize = 2; // ball width and height // TODO: what the heck? should be 1, but doubling the value makes it work better
   let frame = 0;
