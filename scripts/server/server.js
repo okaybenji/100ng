@@ -35,10 +35,26 @@
 
     wss.clients.forEach(function(ws) {
       const x = (function() {
+        // if this is an existing player, use paddle's current position
         if (ws.paddleContainer) {
           return ws.paddleContainer.x;
         }
-        if (playerCountIsEven) {
+
+        // otherwise this is a new player
+        // count the number of players on each side to keep things even
+        let leftCount = 0;
+        let rightCount = 0;
+        wss.clients.forEach(function(client) {
+          if (!client.paddleContainer) {
+            return; // this player doesn't have a paddle (it's probably us), so don't count
+          }
+          if (client.paddleContainer.x < 50) {
+            leftCount++;
+          } else {
+            rightCount++;
+          }
+        });
+        if (leftCount > rightCount) {
           // spawn on right side
           return utils.randomIntBetween(50, 100 - paddleContainerWidth);
         } else {
