@@ -72,6 +72,7 @@
     };
 
     ws.sendStr({ type: 'id', id }); // inform client of its id
+    ws.sendStr({ type: 'score', score }); // inform client of current score
 
     // spawn/respawn all players with new positions based on number of connected clients.
     // bear in mind we have a paddle container (player movement boundaries) position
