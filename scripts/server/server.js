@@ -9,6 +9,11 @@
     const str = JSON.stringify(msg);
 
     wss.clients.forEach(function(client) {
+      if (client.readyState !== client.OPEN) {
+        console.log(client.id, 'state is', client.readyState);
+        return;
+      }
+
       client.send(str);
     });
   };
@@ -57,9 +62,12 @@
 
     // we always want to stringify our data
     ws.sendStr = function(msg) {
-      if (wss.clients.indexOf(ws) === -1) {
-        return; // don't send if client has disconnected or otherwise does not exist
+      // don't send if client has disconnected or otherwise does not exist
+      if (wss.clients.indexOf(ws) === -1 || ws.readyState !== ws.OPEN) {
+        console.log(ws.id, 'state is', ws.readyState);
+        return;
       }
+
       ws.send(JSON.stringify(msg));
     };
 
@@ -73,6 +81,7 @@
     ws.on('close', function() {
       wss.broadcast({ type: 'destroyPlayer', id: id });
       updatePlayerPositions();
+      console.log(id, 'disconnected');
     });
 
     ws.on('message', function incoming(message) {
