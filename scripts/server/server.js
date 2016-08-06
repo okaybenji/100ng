@@ -70,17 +70,18 @@
     ws.paddle = { width: 1, height: 5 };
     ws.paddle.position = { y: 50 - (ws.paddle.height / 2) };
     ws.paddle.position.x = getX(ws.paddle);
+    ws.color = utils.randomColor();
 
     // spawn paddles for all existing connections (except for this one) on the client that just connected
     wss.clients.forEach(function(client) {
       if (client.id === id) {
         return;
       }
-      ws.sendStr({ type: 'spawnPlayer', id: client.id, x: client.paddle.position.x, y: client.paddle.position.y });
+      ws.sendStr({ type: 'spawnPlayer', id: client.id, x: client.paddle.position.x, y: client.paddle.position.y, color: client.color });
     });
 
     // spawn this player on all clients (including this one)
-    wss.broadcast({ type: 'spawnPlayer', id, x: ws.paddle.position.x, y: ws.paddle.position.y });
+    wss.broadcast({ type: 'spawnPlayer', id, x: ws.paddle.position.x, y: ws.paddle.position.y, color: ws.color });
 
     ws.on('close', function() {
       wss.broadcast({ type: 'destroyPlayer', id: id });

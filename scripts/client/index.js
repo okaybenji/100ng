@@ -36,7 +36,7 @@ let player; // ourself/client avatar
       },
       spawnPlayer() {
         const isClient = msg.id === id;
-        const options = {x: msg.x, y: msg.y, isClient};
+        const options = {x: msg.x, y: msg.y, color: msg.color, isClient};
 
         paddles[msg.id] = createPaddle(game, socket, options);
         if (isClient) {
