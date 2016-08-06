@@ -1,9 +1,10 @@
 // TODO: move these inside startGame (here for now for console debugging)
-let players = {};
+let paddles = {};
 let player; // ourself/client avatar
 
 (function startGame() {
   // const ws = new WebSocket('wss://138.68.12.151:8080'); // Digital Ocean server -- does NOT work over WSS
+  // const ws = new WebSocket('ws://localhost:8080'); // for development
   const ws = new WebSocket('wss://l00ng-okaybenji.c9users.io:8080'); // Cloud 9 server -- works over WSS
   const game = document.querySelector('#game');
   const scoreA = document.querySelector('#a.score');
@@ -20,24 +21,9 @@ let player; // ourself/client avatar
     }
   };
 
-  // update players' y reach based on number of players
-  // the more players connected, the less players should be able to move
-  const updatePlayers = function() {
-    const playerKeys = Object.keys(players);
-    const numPlayers = playerKeys.length;
-    var reach = utils.getReach(numPlayers);
-
-    playerKeys.forEach(function(key) {
-      const plr = players[key];
-      plr.paddleContainer.style.height = reach + '%';
-    });
-  };
-
   const destroy = function(playerId) {
-    var plr = players[playerId];
-    plr.paddleContainer.removeChild(plr.paddle);
-    game.removeChild(plr.paddleContainer);
-    delete players[playerId]; // remove player from players to update reach
+    game.removeChild(paddles[playerId]);
+    delete paddles[playerId];
   };
 
   ws.onmessage = function(data, flags) {
@@ -50,28 +36,26 @@ let player; // ourself/client avatar
       },
       spawnPlayer() {
         const isClient = msg.id === id;
-        const options = {x: msg.x, y: msg.y, isClient};
+        const options = {x: msg.x, y: msg.y, color: msg.color, isClient};
 
-        players[msg.id] = createPlayer(game, socket, options);
-        updatePlayers();
-
+        paddles[msg.id] = createPaddle(game, socket, options);
         if (isClient) {
-          player = players[msg.id];
+          player = paddles[msg.id];
         }
       },
       movePlayer() {
         // TODO: interpolate movement!
         if (msg.id !== id) { // ignore this msg if it's us!
-          players[msg.id].paddle.style.top = msg.y + '%'; // update player position
+          paddles[msg.id].style.top = msg.y + '%'; // update player position
         }
       },
       destroyPlayer() {
-        if (players[msg.id]) {
+        if (paddles[msg.id]) {
           destroy(msg.id);
-          updatePlayers();
         }
       },
       moveBall() {
+        // TODO: interpolate movement!
         ball.style.left = msg.x + '%';
         ball.style.top = msg.y + '%';
       },
@@ -87,8 +71,8 @@ let player; // ourself/client avatar
   // auto-reconnect if server reboots
   ws.onclose = function() {
     setTimeout(function() {
-      for (let plr in players) {
-        destroy(plr);
+      for (let paddle in paddles) {
+        destroy(paddle);
       }
       startGame();
     }, 3000);
