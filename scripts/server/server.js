@@ -67,7 +67,8 @@
     ws.sendStr({ type: 'id', id }); // inform client of its id
     ws.sendStr({ type: 'score', score }); // inform client of current score
 
-    ws.paddle = { width: 1, height: 5 };
+    // ws.paddle = { width: 1, height: 5 };
+    ws.paddle = { width: 1, height: 10 }; // TODO: what the heck? why does doubling the height make collision detection almost work right?
     ws.paddle.position = { y: 50 - (ws.paddle.height / 2) };
     ws.paddle.position.x = getX(ws.paddle);
     ws.color = utils.randomColor();
@@ -112,7 +113,8 @@
     let ball = {
       velocity: { x: -0.4, y: 0 },
       width: 1,
-      height: 1
+      // height: 1
+      height: 2 // TODO: what the heck? why does doubling the height make collision detection almost work right?
     };
     ball.position = { x: 50 - (ball.width / 2), y: 50 - (ball.height / 2) };
     return ball;
