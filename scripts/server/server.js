@@ -30,10 +30,10 @@
     let leftCount = 0;
     let rightCount = 0;
     wss.clients.forEach(function(client) {
-      if (!client.paddleContainer) {
-        return; // this player doesn't have a paddle (it's probably us), so don't count
+      if (!client.paddle.position.x) {
+        return; // this player doesn't have a paddle x yet (it's probably us), so don't count
       }
-      if (client.paddleContainer.x < 50) {
+      if (client.paddle.position.x < 50) {
         leftCount++;
       } else {
         rightCount++;
@@ -52,11 +52,6 @@
     const id = idGen();
     console.log(id, 'connected');
     ws.id = id;
-    // TODO: what the heck? paddle height should be 5, but it didn't work until i doubled it
-    // could this have something to do with the 16:9 aspect ratio and vws?
-    ws.paddle = { position: {y: 45}, width: 1, height: 10 };
-    ws.paddle.position.x = getX(ws.paddle);
-    wss.broadcast({type: 'spawnPlayer', id: ws.id, x: ws.paddle.position.x});
 
     // we always want to stringify our data
     ws.sendStr = function(msg) {
@@ -71,6 +66,21 @@
 
     ws.sendStr({ type: 'id', id }); // inform client of its id
     ws.sendStr({ type: 'score', score }); // inform client of current score
+
+    ws.paddle = { width: 1, height: 5 };
+    ws.paddle.position = { y: 50 - (ws.paddle.height / 2) };
+    ws.paddle.position.x = getX(ws.paddle);
+
+    // spawn paddles for all existing connections (except for this one) on the client that just connected
+    wss.clients.forEach(function(client) {
+      if (client.id === id) {
+        return;
+      }
+      ws.sendStr({ type: 'spawnPlayer', id: client.id, x: client.paddle.position.x, y: client.paddle.position.y });
+    });
+
+    // spawn this player on all clients (including this one)
+    wss.broadcast({ type: 'spawnPlayer', id, x: ws.paddle.position.x, y: ws.paddle.position.y });
 
     ws.on('close', function() {
       wss.broadcast({ type: 'destroyPlayer', id: id });
@@ -95,14 +105,16 @@
   const refreshRate = 1000 / fps;
   const broadcastRate = 24; // broadcasts per second
   const framesPerBroadcast = fps / broadcastRate; // skip this many frames between updating clients
-  const ballSize = 2; // ball width and height // TODO: what the heck? should be 1, but doubling the value makes it work better
   let frame = 0;
 
   const newBall = function() {
-    return {
-      position: { x: 50 - (ballSize / 2), y: 50 - (ballSize / 2) },
-      velocity: { x: -0.4, y: 0 }
+    let ball = {
+      velocity: { x: -0.4, y: 0 },
+      width: 1,
+      height: 1
     };
+    ball.position = { x: 50 - (ball.width / 2), y: 50 - (ball.height / 2) };
+    return ball;
   };
   const newScore = function() {
     // teams A & B
@@ -116,7 +128,7 @@
     ball.position.y = ball.position.y + ball.velocity.y;
 
     // bounce off the walls if we hit them
-    if (ball.position.y < 0 || ball.position.y + ballSize > 100) {
+    if (ball.position.y < 0 || ball.position.y + ball.height > 100) {
       ball.velocity.y = -ball.velocity.y;
     }
 
@@ -135,20 +147,20 @@
         a.height + a.position.y > b.position.y;
       };
 
-      var ballIntersectsPaddle = objectsAreColliding(client.paddle, Object.assign({}, ball, {width: ballSize, height: ballSize}));
+      var ballIntersectsPaddle = objectsAreColliding(client.paddle, ball);
 
       if (ballIntersectsPaddle) {
         (function bounceOffPaddle() {
           // ensure ball doesn't get stuck in paddle
           if (ball.velocity.x > 0) { // ball hits paddle from the left
-            ball.position.x = client.paddle.position.x - ballSize;
+            ball.position.x = client.paddle.position.x - ball.height;
           } else { // from the right
             ball.position.x = client.paddle.position.x + client.paddle.width;
           }
           // this calculation borrowed/adapted from Max Wihlborg
           // https://www.youtube.com/watch?v=KApAJhkkqkA
           // allows the player to alter the direction of the ball based on where it hits the paddle
-          var n = (ball.position.y + ballSize - client.paddle.position.y) / (client.paddle.height + ballSize); // normalized -- 0 to 1
+          var n = (ball.position.y + ball.width - client.paddle.position.y) / (client.paddle.height + ball.height); // normalized -- 0 to 1
           var fortyFiveDegrees = 0.25 * Math.PI;
           var n2 = 2 * n - 1; // gives a number from -1 to 1
           var phi = fortyFiveDegrees * n2;

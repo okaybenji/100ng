@@ -1,10 +1,10 @@
 const createPaddle = function(game, socket, options) {
   const paddle = document.createElement('div');
-  paddle.left = options.x + '%';
+  paddle.style.left = options.x + '%';
+  paddle.style.top = options.y + '%';
   paddle.classList.add('paddle');
   paddle.style.backgroundColor = utils.randomColor();
   game.appendChild(paddle);
-  paddle.style.top = '45%'; // 50% - 1/2 paddle height
 
   // add mouse controls if this paddle is the one we (the player) are to control
   if (options.isClient) {
@@ -22,7 +22,8 @@ const createPaddle = function(game, socket, options) {
         startY = event.clientY - maxY;
       }
 
-      const percent = newY / 100;
+      const percent = (newY / game.offsetHeight) * 100;
+      // TODO: throttle movement!
       socket.send({type: 'movePlayer', y: percent});
     });
   }

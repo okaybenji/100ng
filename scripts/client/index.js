@@ -22,8 +22,7 @@ let player; // ourself/client avatar
   };
 
   const destroy = function(playerId) {
-    var playerPaddle = paddles[playerId];
-    game.removeChild(playerPaddle);
+    game.removeChild(paddles[playerId]);
     delete paddles[playerId];
   };
 
@@ -37,10 +36,9 @@ let player; // ourself/client avatar
       },
       spawnPlayer() {
         const isClient = msg.id === id;
-        const options = {x: msg.x, isClient};
+        const options = {x: msg.x, y: msg.y, isClient};
 
         paddles[msg.id] = createPaddle(game, socket, options);
-
         if (isClient) {
           player = paddles[msg.id];
         }
@@ -57,6 +55,7 @@ let player; // ourself/client avatar
         }
       },
       moveBall() {
+        // TODO: interpolate movement!
         ball.style.left = msg.x + '%';
         ball.style.top = msg.y + '%';
       },
