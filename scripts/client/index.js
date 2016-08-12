@@ -87,10 +87,10 @@ let player; // ourself/client avatar
       },
       // sound effect events
       goal() {
-        new Audio('./sounds/goal.webm').play();
+        document.getElementById('goalSound').play();
       },
       hit() {
-        new Audio('./sounds/blip.webm').play();
+        document.getElementById('hitSound').play();
       }
     };
 
