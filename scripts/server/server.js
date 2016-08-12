@@ -182,6 +182,8 @@
     } else if (ball.position.x > 100) {
       score.a++;
       ball = newBall();
+      // change ball direction to serve toward team b
+      ball.velocity.x *= -1;
       wss.broadcast({ type: 'score', score });
     }
 
