@@ -8,13 +8,13 @@
 html {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
+  font-smooth: never;
+  -webkit-font-smoothing : none;
 }
 
 body {
   margin: 1vw;
   background-color: hsl(302, 10%, 99%);
-/*  font-family: Helvetica, sans-serif;*/
-/*  font-size: 3.25vw;*/
 }
 
 /* 16:9 */
@@ -51,16 +51,25 @@ body {
   left: 50%;
 }
 
+.blink {
+  animation: blink 0.5s steps(1, end) infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0.0; }
+}
+
 .score {
+  font-family: 'Small 5x3 Regular';
+  font-size: 8vw; /* not perfect, but close */
   color: white;
-  font-size: 6vw;
   position: absolute;
 }
 
 #a.score {
-  left: 45vw;
+  left: 40vw
 }
 
 #b.score {
-  left: 51vw;
+  left: 51.6vw;
 }

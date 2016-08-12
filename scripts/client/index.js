@@ -60,8 +60,30 @@ let player; // ourself/client avatar
         ball.style.top = msg.y + '%';
       },
       score() {
-        scoreA.innerHTML = msg.score.a;
-        scoreB.innerHTML = msg.score.b;
+        function updateScore(element, score) {
+          // add a leading zero if < 10
+          function format(number) {
+            if (number < 10) {
+              return '0' + number;
+            } else {
+              return number;
+            }
+          }
+
+          // flash winning score
+          const maxScore = 11;
+          const blinkClass = 'blink';
+          if (score === maxScore) {
+            element.classList.add(blinkClass);
+          } else {
+            element.classList.remove(blinkClass);
+          }
+
+          element.innerHTML = format(score);
+        }
+
+        updateScore(scoreA, msg.score.a);
+        updateScore(scoreB, msg.score.b);
       }
     };
 

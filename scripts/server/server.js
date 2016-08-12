@@ -185,7 +185,7 @@
       wss.broadcast({ type: 'score', score });
     }
 
-    const maxScore = 7;
+    const maxScore = 11;
     if (score.a >= maxScore || score.b >= maxScore) {
       score = newScore(); // reset score
     } else {
