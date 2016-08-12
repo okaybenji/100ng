@@ -91,6 +91,9 @@ let player; // ourself/client avatar
       },
       hit() {
         document.getElementById('hitSound').play();
+      },
+      win() {
+        document.getElementById('winSound').play();
       }
     };
 

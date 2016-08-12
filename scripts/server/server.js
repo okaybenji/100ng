@@ -193,6 +193,7 @@
     const maxScore = 11;
     if (score.a >= maxScore || score.b >= maxScore) {
       score = newScore(); // reset score
+      wss.broadcast({ type: 'win' });
     } else {
       if (frame % framesPerBroadcast === 0) {
         wss.broadcast({ type: 'moveBall', x: ball.position.x, y: ball.position.y });
