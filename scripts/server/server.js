@@ -170,6 +170,7 @@
           ball.velocity.x = -ball.velocity.x;
           ball.velocity.y = Math.sin(phi);
           hasBounced = true;
+          wss.broadcast({ type: 'hit' });
         }());
       }
     });
@@ -178,12 +179,14 @@
     if (ball.position.x < 0) {
       score.b++;
       ball = newBall();
+      wss.broadcast({ type: 'goal' });
       wss.broadcast({ type: 'score', score });
     } else if (ball.position.x > 100) {
       score.a++;
       ball = newBall();
       // change ball direction to serve toward team b
       ball.velocity.x *= -1;
+      wss.broadcast({ type: 'goal' });
       wss.broadcast({ type: 'score', score });
     }
 

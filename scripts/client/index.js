@@ -84,6 +84,13 @@ let player; // ourself/client avatar
 
         updateScore(scoreA, msg.score.a);
         updateScore(scoreB, msg.score.b);
+      },
+      // sound effect events
+      goal() {
+        new Audio('../../sounds/goal.webm').play();
+      },
+      hit() {
+        new Audio('../../sounds/blip.webm').play();
       }
     };
 
