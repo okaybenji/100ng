@@ -1,5 +1,5 @@
 {
   "esversion": 6,
   "browser": true,
-  "globals": { "utils" : true, "createPlayer" : true }
+  "globals": { "utils" : true, "createPaddle" : true }
 }
