@@ -169,6 +169,9 @@
           var phi = fortyFiveDegrees * n2;
           ball.velocity.x = -ball.velocity.x;
           ball.velocity.y = Math.sin(phi);
+          // increase ball speed
+          ball.velocity.x *= 1.05;
+          ball.velocity.y *= 1.05;
           hasBounced = true;
           wss.broadcast({ type: 'hit' });
         }());
