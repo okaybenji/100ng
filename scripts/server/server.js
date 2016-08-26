@@ -132,6 +132,12 @@
 
     // bounce off the walls if we hit them
     if (ball.position.y < 0 || ball.position.y + ball.height > 100) {
+      // ensure ball doesn't get stuck in wall
+      if (ball.velocity.y > 0) { // ball hits bottom wall
+        ball.position.y = 100 - ball.height;
+      } else { // top wall
+        ball.position.y = 0;
+      }
       ball.velocity.y = -ball.velocity.y;
     }
 
