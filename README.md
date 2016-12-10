@@ -1,6 +1,6 @@
 ![alt text](100ng-logo.png "100ng")
 
-100-player Pong.
+100-player Pong. [Play here!](https://okaybenji.itch.io/100ng)
 
 Art and concept by G30 for [Famicase 2016](http://famicase.com/16/).
 
