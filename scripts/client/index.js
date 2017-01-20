@@ -3,9 +3,7 @@ let paddles = {};
 let player; // ourself/client avatar
 
 (function startGame() {
-  // const ws = new WebSocket('wss://138.68.12.151:8080'); // Digital Ocean server -- does NOT work over WSS
-  // const ws = new WebSocket('ws://localhost:8080'); // for development
-  const ws = new WebSocket('wss://l00ng-okaybenji.c9users.io:8080'); // Cloud 9 server -- works over WSS
+  const ws = new WebSocket('wss://banjo.benjikay.com:8080');
   const game = document.querySelector('#game');
   const scoreA = document.querySelector('#a.score');
   const scoreB = document.querySelector('#b.score');
