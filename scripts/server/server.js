@@ -132,6 +132,12 @@
 
     // bounce off the walls if we hit them
     if (ball.position.y < 0 || ball.position.y + ball.height > 100) {
+      // ensure ball doesn't get stuck in wall
+      if (ball.velocity.y > 0) { // ball hits bottom wall
+        ball.position.y = 100 - ball.height;
+      } else { // top wall
+        ball.position.y = 0;
+      }
       ball.velocity.y = -ball.velocity.y;
     }
 
@@ -143,16 +149,41 @@
         return;
       }
 
-      var objectsAreColliding = function(a, b) {
+      const objectsAreColliding = function(a, b) {
         return a.position.x < b.position.x + b.width &&
         a.position.x + a.width > b.position.x &&
         a.position.y < b.position.y + b.height &&
         a.height + a.position.y > b.position.y;
       };
 
-      var ballIntersectsPaddle = objectsAreColliding(client.paddle, ball);
+      const ballIntersectsPaddle = objectsAreColliding(client.paddle, ball);
+      // predict whether the ball would 'phase through' the paddle due to its velocity
+      // TODO: prediction could be improved by calculating where ball y would have been when it crossed the paddle's x,
+      // and taking into account a bounce if it would have hit the wall in the meantime
+      const ballWillIntersectPaddle = (function() {
+        let ballYNextFrame = ball.position.y + ball.velocity.y;
+        // force ballNextFrame to wall if it would've crossed wall boundary
+        ballYNextFrame = ballYNextFrame < 0 ? 0 : ballYNextFrame + ball.height > 100 ? 100 - ball.height : ballYNextFrame;
+        const ballNextFrame = Object.assign({}, ball, {position: {x: ball.position.x + ball.velocity.x, y: ballYNextFrame}});
+        let ballWillPhaseThroughPaddle;
+        const ballYDoesAndWillIntersectPaddleY =
+          ball.position.y < client.paddle.position.y + client.paddle.height &&
+          ball.height + ball.position.y > client.paddle.position.y &&
+          ballNextFrame.position.y < client.paddle.position.y + client.paddle.height &&
+          ballNextFrame.height + ballNextFrame.position.y > client.paddle.position.y;
+        if (ball.velocity.x > 0) { // ball moving rightward
+          ballWillPhaseThroughPaddle = ball.position.x + ball.width < client.paddle.position.x &&
+              ballNextFrame.position.x > client.paddle.position.x + client.paddle.width &&
+              ballYDoesAndWillIntersectPaddleY;
+        } else { // ball moving rightward
+          ballWillPhaseThroughPaddle = ball.position.x > client.paddle.position.x + client.paddle.width &&
+              ballNextFrame.position.x + ballNextFrame.width < client.paddle.position.x &&
+              ballYDoesAndWillIntersectPaddleY;
+        }
+        return ballWillPhaseThroughPaddle;
+      }());
 
-      if (ballIntersectsPaddle) {
+      if (ballIntersectsPaddle || ballWillIntersectPaddle) {
         (function bounceOffPaddle() {
           // ensure ball doesn't get stuck in paddle
           if (ball.velocity.x > 0) { // ball hits paddle from the left
@@ -163,12 +194,15 @@
           // this calculation borrowed/adapted from Max Wihlborg
           // https://www.youtube.com/watch?v=KApAJhkkqkA
           // allows the player to alter the direction of the ball based on where it hits the paddle
-          var n = (ball.position.y + ball.width - client.paddle.position.y) / (client.paddle.height + ball.height); // normalized -- 0 to 1
-          var fortyFiveDegrees = 0.25 * Math.PI;
-          var n2 = 2 * n - 1; // gives a number from -1 to 1
-          var phi = fortyFiveDegrees * n2;
+          const n = (ball.position.y + ball.width - client.paddle.position.y) / (client.paddle.height + ball.height); // normalized -- 0 to 1
+          const fortyFiveDegrees = 0.25 * Math.PI;
+          const n2 = 2 * n - 1; // gives a number from -1 to 1
+          const phi = fortyFiveDegrees * n2;
           ball.velocity.x = -ball.velocity.x;
           ball.velocity.y = Math.sin(phi);
+          // increase ball speed
+          ball.velocity.x *= 1.05;
+          ball.velocity.y *= 1.05;
           hasBounced = true;
           wss.broadcast({ type: 'hit' });
         }());
@@ -193,6 +227,7 @@
     const maxScore = 11;
     if (score.a >= maxScore || score.b >= maxScore) {
       score = newScore(); // reset score
+      wss.broadcast({ type: 'win' });
     } else {
       if (frame % framesPerBroadcast === 0) {
         wss.broadcast({ type: 'moveBall', x: ball.position.x, y: ball.position.y });

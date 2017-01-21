@@ -1,6 +1,6 @@
 {
   "name": "100ng",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "description": "100-player Pong",
   "main": "index.js",
   "scripts": {
