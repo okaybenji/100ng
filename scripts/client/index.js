@@ -3,7 +3,7 @@ let paddles = {};
 let player; // ourself/client avatar
 
 (function startGame() {
-  const ws = new WebSocket('wss://banjo.benjikay.com');
+  const ws = new WebSocket('wss://banjo.benjikay.com/100ng');
   const game = document.querySelector('#game');
   const scoreA = document.querySelector('#a.score');
   const scoreB = document.querySelector('#b.score');
