@@ -8,4 +8,6 @@ Sounds made with [Bfxr](http://www.bfxr.net). Font from [Fonts2u](http://www.fon
 
 Game by me for the [A Game By Its Cover 2016](https://itch.io/jam/a-game-by-its-cover-2016) game jam.
 
+Thanks to [Allan Alcorn](https://twitter.com/alalcorn) for creating Pong!
+
 ![alt text](100ng.jpg "100ng")
